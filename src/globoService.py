@@ -3,17 +3,19 @@ import bs4
 
 CLASS_LINK_GLOBO = 'feed-post-link'
 
-"""
-Função que recebe uma URL e retorna uma lista de dicionários contendo informações sobre as notícias encontradas.
 
-Parâmetros:
-url (str): A URL da página que contém as notícias.
-
-Retorna:
-list: Uma lista de dicionários contendo as informações das notícias encontradas. Cada dicionário possui as chaves 'titulo', 'corpo' e 'link'.
-
-"""
 def get_news(url):
+
+    """
+    Função que recebe uma URL e retorna uma lista de dicionários contendo informações sobre as notícias encontradas.
+
+    Parâmetros:
+    url (str): A URL da página que contém as notícias.
+
+    Retorna:
+    list: Uma lista de dicionários contendo as informações das notícias encontradas. Cada dicionário possui as chaves 'titulo', 'corpo' e 'link'.
+
+    """
 
     # Faz uma requisição GET para a URL fornecida
     response = requests.get(url)
@@ -25,9 +27,11 @@ def get_news(url):
     links = soup.find_all('a', class_=CLASS_LINK_GLOBO)
     
     noticias = []    
-    try:
-        # Itera sobre cada link encontrado
-        for link in links:
+    # Itera sobre cada link encontrado
+    for link in links:
+
+        try:
+
             # Faz uma requisição GET para o link encontrado
             response_link = requests.get(link.get('href'))
             
@@ -44,12 +48,12 @@ def get_news(url):
             strings = '\n'.join([elemento.get_text() for elemento in corpo])
             
             # Adiciona um dicionário contendo as informações da notícia à lista de notícias
-            noticias.append({'titulo': titulo, 'corpo': strings, 'link': link['href']})
+            noticias.append({'titulo': titulo, 'corpo': strings, 'link': link['href']}),
         
-        # Retorna a lista de notícias encontradas
-        return noticias
+        except:
+            # Em caso de erro, imprime a mensagem de erro e continua para a próxima notícia
+            print(f"Erro ao pegar dados da noticia: {link.get('href')}" if link.get('href') else 'Erro ao pegar dados da noticia')
+            continue
     
-    except Exception as e:
-        # Em caso de erro, imprime a mensagem de erro e retorna None
-        print(f"Erro ao buscar notícias: {e}")
-        return None
+    # Retorna a lista de notícias encontradas
+    return noticias
